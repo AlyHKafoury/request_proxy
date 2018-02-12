@@ -21,16 +21,22 @@ while True:
 
         # Receive the data in small chunks and retransmit it
         while True:
-            data = connection.recv(16)
-            print >>sys.stderr, 'received "%s"' % data
-            if data:
+            data = connection.recv(20480)
+            print >>sys.stderr, 'received "%s"' % repr(data)
+            if len(data) > 3:
                 print >>sys.stderr, 'sending data back to the client'
                 connection.sendall(data)
-            else:
-                print >>sys.stderr, 'no more data from', client_address
-                break
+            	if data[-4:] == "\r\n\r\n":
+                	print >>sys.stderr, 'no more data from', client_address
+			sock.close()
+        		connection.close()
+                	break
+	    else:
+	        break
             
     finally:
         # Clean up the connection
+	sock.close()
         connection.close()
+    break
 
